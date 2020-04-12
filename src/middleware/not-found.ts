@@ -1,5 +1,5 @@
 import { ResponseError } from '../interfaces/response-error';
-import { NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 module.exports = (req: Request, res: Response, next: NextFunction) => {
   const err: ResponseError = new Error('Not Found');
