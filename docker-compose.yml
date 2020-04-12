@@ -1,7 +1,7 @@
-version: '2.4'
+version: "2.4"
 
 services:
-  ts:
+  api:
     build:
       context: .
       target: dev
@@ -10,3 +10,8 @@ services:
       - "9229:9229"
     volumes:
       - .:/app
+  mongo:
+    container_name: jabberish-db
+    image: mongo
+    ports:
+      - "27027:27027"
