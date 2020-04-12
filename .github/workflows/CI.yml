@@ -31,9 +31,11 @@ jobs:
       - name: Install
         run: npm install
 
+      - name: build
+        run: npm run build
+
       - name: test
         run: npm test
         env:
           MONGODB_URI: mongodb://localhost:27017/github
           NODE_ENV: ci
-          APP_SECRET: githubActionsSecret
