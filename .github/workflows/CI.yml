@@ -22,7 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - name: Use name ${{ matrix.node }}
+      - name: Use node ${{ matrix.node }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node }}
