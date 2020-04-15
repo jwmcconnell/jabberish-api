@@ -1,8 +1,10 @@
 import { ResponseError } from '../interfaces/response-error';
 import { VerifyRequest } from '../interfaces/verify-request';
 import { NextFunction, Response } from 'express';
-import User from '../models/User';
+import User, { IUser } from '../models/User';
 import jwt from 'jsonwebtoken';
+
+const secret: string = process.env.APP_SECRET!;
 
 module.exports = (req: VerifyRequest, res: Response, next: NextFunction) => {
   // console.log({ req });
@@ -14,8 +16,8 @@ module.exports = (req: VerifyRequest, res: Response, next: NextFunction) => {
   }
 
   try {
-    const userPayload = jwt.verify(token, process.env.APP_SECRET);
-    const user = User.findById(userPayload._id).then((user) => {
+    const userPayload: any = jwt.verify(token, secret);
+    User.findById(userPayload._id).then((user) => {
       if (!user) {
         console.log('No user');
         const err: ResponseError = new Error('Invalid token');

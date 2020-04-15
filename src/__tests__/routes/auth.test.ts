@@ -5,7 +5,6 @@ import { app } from '../../app';
 import { connect } from '../../utils/connect';
 import mongoose = require('mongoose');
 import { setupTest } from '../helpers/setup-test';
-import { Response } from 'express';
 
 describe('app routes', () => {
   beforeAll(() => {
@@ -35,7 +34,7 @@ describe('app routes', () => {
           .post('/api/v1/auth/signin')
           .send({ username: 'jack', password: 'password' });
       })
-      .then((res: any) => {
+      .then((res) => {
         expect(res.body).toEqual({
           _id: expect.any(String),
           username: 'jack',
@@ -45,7 +44,7 @@ describe('app routes', () => {
           .post('/api/v1/auth/signin')
           .send({ username: 'jack', password: 'wrong-password' });
       })
-      .then((res: any) => {
+      .then((res) => {
         expect(res.body).toEqual({
           status: 401,
           message: 'Invalid username/password',
@@ -54,7 +53,7 @@ describe('app routes', () => {
           .post('/api/v1/auth/signin')
           .send({ username: 'wrong-username', password: 'password' });
       })
-      .then((res: any) => {
+      .then((res) => {
         expect(res.body).toEqual({
           status: 401,
           message: 'Invalid username/password',
@@ -67,10 +66,10 @@ describe('app routes', () => {
     return agent
       .post('/api/v1/auth/signup')
       .send({ username: 'agent', password: 'password' })
-      .then((res: any) => {
+      .then(() => {
         return agent.get('/api/v1/auth/verify');
       })
-      .then((res: any) => {
+      .then((res) => {
         expect(res.body).toEqual({
           _id: expect.any(String),
           username: 'agent',

@@ -1,11 +1,10 @@
-import { NextFunction, Router, Request, Response } from 'express';
+import { Router } from 'express';
 import { ResponseError } from '../interfaces/response-error';
 import User from '../models/User';
-import { VerifyRequest } from '../interfaces/verify-request';
 const ensureAuth = require('../middleware/ensure-auth');
 
 module.exports = Router()
-  .post('/signup', (req: Request, res: Response, next: NextFunction) => {
+  .post('/signup', (req, res, next) => {
     const { username, password, profileImage } = req.body;
 
     User.create({ username, password, profileImage })
@@ -40,7 +39,7 @@ module.exports = Router()
       }
     });
   })
-  .get('/verify', ensureAuth, (req: Request, res: Response) => {
+  .get('/verify', ensureAuth, (req, res) => {
     // we need middleware to ensure auth!
     const { user } = req.body;
     res.send(user);

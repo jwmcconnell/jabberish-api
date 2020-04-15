@@ -3,9 +3,9 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 export interface IUser extends Document {
-  compare(password: any);
-  authToken(): any;
-  findByToken: () => void;
+  compare(password: string): () => boolean;
+  authToken(): () => string;
+  findByToken: () => IUser;
   username: string;
   profileImage: string;
   passwordHash: string;
@@ -35,11 +35,13 @@ const userSchema: Schema = new Schema(
   }
 );
 
-userSchema.virtual('password').set(function (this: IUser, clearPassword) {
-  this.passwordHash = bcrypt.hashSync(clearPassword);
-});
+userSchema
+  .virtual('password')
+  .set(function (this: IUser, clearPassword: string) {
+    this.passwordHash = bcrypt.hashSync(clearPassword);
+  });
 
-userSchema.methods.compare = function (clearPassword) {
+userSchema.methods.compare = function (clearPassword: string) {
   return bcrypt.compareSync(clearPassword, this.passwordHash);
 };
 
@@ -47,7 +49,7 @@ userSchema.methods.authToken = function () {
   return jwt.sign(this.toJSON(), process.env.APP_SECRET, { expiresIn: '24h' });
 };
 
-userSchema.statics.findByToken = function (token) {
+userSchema.statics.findByToken = function (token: string) {
   try {
     const userPayload = jwt.verify(token, process.env.APP_SECRET);
     return this.findById(userPayload._id);
