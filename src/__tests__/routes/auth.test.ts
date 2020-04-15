@@ -5,15 +5,24 @@ import { app } from '../../app';
 import { connect } from '../../utils/connect';
 import mongoose = require('mongoose');
 import { setupTest } from '../helpers/setup-test';
+import { IUser } from '../../models/User';
 
 describe('app routes', () => {
+  let agent = request.agent(app);
+  let agentUser: IUser;
   beforeAll(() => {
     if (process.env.NODE_ENV !== 'ci') setupTest();
     connect();
   });
 
-  beforeEach(() => {
-    return mongoose.connection!.dropDatabase();
+  beforeEach(async () => {
+    mongoose.connection!.dropDatabase();
+    return await agent
+      .post('/api/v1/auth/signup')
+      .send({ username: 'agent', password: 'password' })
+      .then((res) => {
+        agentUser = res.body;
+      });
   });
 
   afterAll(() => {
@@ -62,19 +71,12 @@ describe('app routes', () => {
   });
 
   it('Verifies a logged in user', async () => {
-    let agent = request.agent(app);
-    return agent
-      .post('/api/v1/auth/signup')
-      .send({ username: 'agent', password: 'password' })
-      .then(() => {
-        return agent.get('/api/v1/auth/verify');
-      })
-      .then((res) => {
-        expect(res.body).toEqual({
-          _id: expect.any(String),
-          username: 'agent',
-          profileImage: expect.any(String),
-        });
+    return agent.get('/api/v1/auth/verify').then((res) => {
+      expect(res.body).toEqual({
+        _id: agentUser._id,
+        username: agentUser.username,
+        profileImage: agentUser.profileImage,
       });
+    });
   });
 });

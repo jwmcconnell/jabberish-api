@@ -22,7 +22,6 @@ module.exports = Router().post('/', ensureAuth, async (req, res, next) => {
     });
     res.send(workspace);
   } catch (err) {
-    console.log('ERROR GO BRRRR');
     next(err);
   }
 });
