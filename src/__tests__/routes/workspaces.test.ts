@@ -54,4 +54,43 @@ describe('app routes', () => {
         });
       });
   });
+
+  it('Returns all workspaces the user is an owner of', () => {
+    return agent
+      .get('/api/v1/workspaces/owner')
+      .then((res) => {
+        expect(res.body).toEqual([]);
+        return agent.post('/api/v1/workspaces').send({ name: 'test1' });
+      })
+      .then(() => {
+        return agent.get('/api/v1/workspaces/owner');
+      })
+      .then((res) => {
+        expect(res.body).toHaveLength(1);
+        expect(res.body[0]).toEqual({
+          _id: expect.any(String),
+          owner: agentUser._id,
+          name: 'test1',
+        });
+        return agent.post('/api/v1/workspaces').send({ name: 'test2' });
+      })
+      .then(() => {
+        return agent.get('/api/v1/workspaces/owner');
+      })
+      .then((res) => {
+        expect(res.body).toHaveLength(2);
+        expect(res.body).toEqual([
+          {
+            _id: expect.any(String),
+            owner: agentUser._id,
+            name: 'test1',
+          },
+          {
+            _id: expect.any(String),
+            owner: agentUser._id,
+            name: 'test2',
+          },
+        ]);
+      });
+  });
 });
