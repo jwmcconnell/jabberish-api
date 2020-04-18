@@ -59,31 +59,6 @@ module.exports = Router()
     } catch (err) {
       next(err);
     }
-    // Workspace.findById(req.params.id)
-    //   .then((workspace) => {
-    //     if (!workspace) {
-    //       const err: ResponseError = new Error('Workspace not found');
-    //       err.status = 404;
-    //       return next(err);
-    //     } else if (workspace.owner.toString() !== user._id.toString()) {
-    //       const err: ResponseError = new Error(
-    //         'You are not allowed to add users to this workspace'
-    //       );
-    //       err.status = 403;
-    //       return next(err);
-    //     }
-    //     return User.findOne({ username: username });
-    //   })
-    //   .then((user) => {
-    //     return UserByWorkspace.create({
-    //       user: user._id,
-    //       workspace: req.params.id,
-    //     });
-    //   })
-    //   .then((rel) => {
-    //     res.send(rel);
-    //   })
-    //   .catch(next);
   })
   .get('/owner', ensureAuth, (req, res, next) => {
     const { user } = req.body;
