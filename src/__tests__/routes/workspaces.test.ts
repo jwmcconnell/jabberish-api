@@ -168,11 +168,10 @@ describe('app routes', () => {
     return agent
       .get('/api/v1/workspaces/member')
       .then((res) => {
-        console.log(res.body);
         expect(res.body).toEqual([]);
         return agent.post('/api/v1/workspaces').send({ name: 'test1' });
       })
-      .then((res) => {
+      .then(() => {
         return agent.get('/api/v1/workspaces/member');
       })
       .then((res) => {
