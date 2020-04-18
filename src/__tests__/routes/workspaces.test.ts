@@ -113,4 +113,54 @@ describe('app routes', () => {
         });
       });
   });
+
+  it('Fails to add a user to a nonexistant workspace', async () => {
+    const user = await User.create({ username: 'test', password: 'test' });
+
+    return agent
+      .post('/api/v1/workspaces/users')
+      .send({ username: user.username, workspaceId: user._id })
+      .then((res) => {
+        expect(res.body).toEqual({
+          message: 'Workspace not found',
+          status: 404,
+        });
+      });
+  });
+
+  it('Fails to add a nonexistant user to a workspace', async () => {
+    const workspace = await Workspace.create({
+      name: 'test-workspace',
+      owner: agentUser._id,
+    });
+
+    return agent
+      .post('/api/v1/workspaces/users')
+      .send({ username: 'wrong-name', workspaceId: workspace._id })
+      .then((res) => {
+        expect(res.body).toEqual({
+          message: 'User not found',
+          status: 404,
+        });
+      });
+  });
+
+  it('Fails to add a user to a workpsace they arent the owner of', async () => {
+    const user1 = await User.create({ username: 'test1', password: 'test' });
+    const user2 = await User.create({ username: 'test2', password: 'test' });
+    const workspace = await Workspace.create({
+      name: 'test-workspace',
+      owner: user2._id,
+    });
+
+    return agent
+      .post('/api/v1/workspaces/users')
+      .send({ username: user1.username, workspaceId: workspace._id })
+      .then((res) => {
+        expect(res.body).toEqual({
+          message: 'You are not allowed to add users to this workspace',
+          status: 403,
+        });
+      });
+  });
 });
