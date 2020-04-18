@@ -5,7 +5,8 @@ import { app } from '../../app';
 import { connect } from '../../utils/connect';
 import mongoose = require('mongoose');
 import { setupTest } from '../helpers/setup-test';
-import { IUser } from '../../models/User';
+import User, { IUser } from '../../models/User';
+import Workspace, { IWorkspace } from '../../models/Workspace';
 
 describe('app routes', () => {
   let agent = request.agent(app);
@@ -42,7 +43,7 @@ describe('app routes', () => {
       });
   });
 
-  it('Creates a workspace', () => {
+  it('Fails to create a workspace a workspace', () => {
     return agent
       .post('/api/v1/workspaces')
       .send({})
@@ -91,6 +92,25 @@ describe('app routes', () => {
             name: 'test2',
           },
         ]);
+      });
+  });
+
+  it('Adds a user as a member to a workspace', async () => {
+    const user = await User.create({ username: 'test', password: 'test' });
+    const workspace = await Workspace.create({
+      name: 'test-workspace',
+      owner: agentUser._id,
+    });
+
+    return agent
+      .post('/api/v1/workspaces/users')
+      .send({ username: user.username, workspaceId: workspace._id })
+      .then((res) => {
+        expect(res.body).toEqual({
+          _id: expect.any(String),
+          user: user._id.toString(),
+          workspace: workspace._id.toString(),
+        });
       });
   });
 });
