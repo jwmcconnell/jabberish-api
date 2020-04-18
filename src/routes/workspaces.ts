@@ -65,13 +65,14 @@ module.exports = Router()
     Workspace.find({ owner: user._id })
       .then((workspaces) => res.send(workspaces))
       .catch(next);
+  })
+  .get('/member', ensureAuth, (req, res, next) => {
+    const { user } = req.body;
+    UserByWorkspace.find({ user: user._id })
+      .populate('workspace')
+      .then((workspaces) => res.send(workspaces))
+      .catch(next);
   });
-//   .get('/member', ensureAuth, (req, res, next) => {
-//     UserByWorkspace.find({ user: req.user._id })
-//       .populate('workspace')
-//       .then((workspaces) => res.send(workspaces))
-//       .catch(next);
-//   });
 //   .delete('/:id', ensureAuth, (req, res, next) => {
 //     Workspace.findOneAndDelete({ owner: req.user._id, _id: req.params.id })
 //       .then((workspace) => {

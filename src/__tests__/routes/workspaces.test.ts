@@ -163,4 +163,31 @@ describe('app routes', () => {
         });
       });
   });
+
+  it('Returns all workspaces the user is a member of', () => {
+    return agent
+      .get('/api/v1/workspaces/member')
+      .then((res) => {
+        console.log(res.body);
+        expect(res.body).toEqual([]);
+        return agent.post('/api/v1/workspaces').send({ name: 'test1' });
+      })
+      .then((res) => {
+        return agent.get('/api/v1/workspaces/member');
+      })
+      .then((res) => {
+        expect(res.body).toHaveLength(1);
+        expect(res.body).toEqual([
+          {
+            _id: expect.any(String),
+            user: agentUser._id,
+            workspace: {
+              _id: expect.any(String),
+              name: 'test1',
+              owner: agentUser._id,
+            },
+          },
+        ]);
+      });
+  });
 });
