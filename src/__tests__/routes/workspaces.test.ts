@@ -189,4 +189,24 @@ describe('app routes', () => {
         ]);
       });
   });
+
+  it('Deletes a workspace', async () => {
+    const workspace = await Workspace.create({
+      name: 'test-workspace',
+      owner: agentUser._id,
+    });
+    return agent
+      .delete(`/api/v1/workspaces/${workspace._id}`)
+      .then((res) => {
+        expect(res.body).toEqual({
+          _id: expect.any(String),
+          name: 'test-workspace',
+          owner: agentUser._id,
+        });
+        return agent.get('/api/v1/workspaces/member');
+      })
+      .then((res) => {
+        expect(res.body).toEqual([]);
+      });
+  });
 });

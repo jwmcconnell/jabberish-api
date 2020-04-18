@@ -72,18 +72,21 @@ module.exports = Router()
       .populate('workspace')
       .then((workspaces) => res.send(workspaces))
       .catch(next);
+  })
+  .delete('/:id', ensureAuth, async (req, res, next) => {
+    const { user } = req.body;
+    const workspace = await Workspace.findOneAndDelete({
+      owner: user._id,
+      _id: req.params.id,
+    });
+    if (workspace) {
+      try {
+        await UserByWorkspace.deleteMany({ workspace: workspace._id });
+        await Channel.deleteMany({ workspace: workspace._id });
+        await Message.deleteMany({ workspace: workspace._id });
+      } catch (err) {
+        next(err);
+      }
+    }
+    res.send(workspace);
   });
-//   .delete('/:id', ensureAuth, (req, res, next) => {
-//     Workspace.findOneAndDelete({ owner: req.user._id, _id: req.params.id })
-//       .then((workspace) => {
-//         return UserByWorkspace.deleteMany({ workspace: workspace._id });
-//       })
-//       .then(() => {
-//         return Channel.deleteMany({ workspace: req.params.id });
-//       })
-//       .then(() => {
-//         return Message.deleteMany({ workspace: req.params.id });
-//       })
-//       .then((deleted) => res.send(deleted))
-//       .catch(next);
-//   });
